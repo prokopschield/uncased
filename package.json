@@ -1,0 +1,10 @@
+{
+	"name": "uncased",
+	"description": "Map with lowercase indexes",
+	"version": "1.0.0-1",
+	"main": "lib/uncased.js",
+	"author": "Prokop Schield",
+	"license": "GPL-3.0-or-later",
+	"devDependencies": {},
+	"keywords": []
+}
