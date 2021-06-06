@@ -6,5 +6,16 @@
 	"author": "Prokop Schield",
 	"license": "GPL-3.0-or-later",
 	"devDependencies": {},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/prokopschield/uncased.git"
+	},
+	"bugs": {
+		"url": "https://github.com/prokopschield/uncased/issues"
+	},
+	"homepage": "https://github.com/prokopschield/uncased#readme",
+	"directories": {
+		"lib": "lib"
+	},
 	"keywords": []
 }
