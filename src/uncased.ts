@@ -153,7 +153,9 @@ export class Uncased implements Map<string, Uncased | string> {
 			set (target, key, val) {
 				return !!target.set(key.toString(), val);
 			},
-		});
+		}) as unknown as {
+			[index: string]: string | Uncased;
+		};
 	}
 }
 
