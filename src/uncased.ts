@@ -143,9 +143,10 @@ export class Uncased implements Map<string, Uncased | string> {
 	[Symbol.toStringTag] = 'Uncased Map';
 	/**
 	 * Get an object-like accessor
-	 * @returns Object-like accessor
 	 */
-	get obj () {
+	get obj (): {
+		[index: string]: string | Uncased;
+	} {
 		return new Proxy(this, {
 			get (target, key) {
 				return target.get(key.toString());
@@ -156,6 +157,37 @@ export class Uncased implements Map<string, Uncased | string> {
 		}) as unknown as {
 			[index: string]: string | Uncased;
 		};
+	}
+	/**
+	 * Get an object-like accessor that only returns strings
+	 */
+	get str (): {
+		[index: string]: string;
+	} {
+		return new Proxy(this, {
+			get (target, key) {
+				const entry = target.get(key.toString())
+				if (typeof entry === 'string') {
+					return entry;
+				} else if (entry) {
+					for (let [ key, val ] of entry) {
+						if (typeof val === 'string') val;
+						else return val.first;
+					}
+				}
+			},
+			set (target, key, val) {
+				return !!target.set(key.toString(), val);
+			},
+		}) as unknown as {
+			[index: string]: string;
+		};
+	}
+	get first (): string | undefined {
+		for (const [ key, value ] of this) {
+			if (typeof value === 'string') return value;
+			else return value.first;
+		}
 	}
 }
 

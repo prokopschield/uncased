@@ -31,5 +31,6 @@ map.obj.a.obj.b.obj.c.obj.d // e
 ```
 
 #### map.obj returns a Proxy object, which you can use instead of the map!
+#### map.str returns a Proxy object, which only gives you strings.
 
 Free to use, under GNU GPL. See [License](<https://gnu.org/licenses/gpl>).
