@@ -5,6 +5,42 @@ const adder_global_set = new WeakSet;
  */
 export class Uncased implements Map<string, Uncased | string> {
 	#_values = new Map<string, Uncased | string>();
+	#_valobj: {
+		[index: string]: Uncased | string;
+	} = {}
+	#_strobj: {
+		[index: string]: string;
+	} = {}
+	private __reflect (key: string) {
+		const self = this;
+		Object.defineProperty(self.#_valobj, key, {
+			enumerable: true,
+			configurable: true,
+			get () {
+				return self.get(key);
+			},
+			set (val) {
+				return self.set(key, val);
+			},
+		});
+		Object.defineProperty(self.#_strobj, key, {
+			enumerable: true,
+			configurable: true,
+			get () {
+				const val = self.get(key);
+				if (typeof val === 'string') return val;
+				else return val?.first;
+			},
+			set (val) {
+				return self.set(key, val);
+			},
+		});
+	}
+	private __set (key: string, val: string | Uncased) {
+		key = `${key}`.toLocaleLowerCase();
+		this.#_values.set(key, val);
+		this.__reflect(key);
+	}
 	constructor (...initial: any[]) {
 		this.add(initial);
 	}
@@ -16,7 +52,7 @@ export class Uncased implements Map<string, Uncased | string> {
 		for (const entry of entries) {
 			if (typeof entry !== 'object') {
 				try {
-					this.#_values.set(`${entry}`.toLocaleLowerCase(), `${entry}`);
+					this.__set(`${entry}`.toLocaleLowerCase(), `${entry}`);
 				} catch (error) {}
 			} else {
 				adder_global_set.add(entry);
@@ -39,12 +75,12 @@ export class Uncased implements Map<string, Uncased | string> {
 					const val = entry[key];
 					if (typeof val === 'object') {
 						if (adder_global_set.has(val)) {
-							this.#_values.set(`${key}`.toLocaleLowerCase(), '<<< SELF-REFERENCE >>>');
+							this.__set(`${key}`.toLocaleLowerCase(), '<<< SELF-REFERENCE >>>');
 						} else {
-							this.#_values.set(`${key}`.toLocaleLowerCase(), new Uncased(val));
+							this.__set(`${key}`.toLocaleLowerCase(), new Uncased(val));
 						}
 					} else {
-						this.#_values.set(`${key}`.toLocaleLowerCase(), `${val}`);
+						this.__set(`${key}`.toLocaleLowerCase(), `${val}`);
 					}
 				}
 				adder_global_set.delete(entry);
@@ -147,16 +183,15 @@ export class Uncased implements Map<string, Uncased | string> {
 	get obj (): {
 		[index: string]: string | Uncased;
 	} {
-		return new Proxy(this, {
+		const self = this;
+		return new Proxy(self.#_valobj, {
 			get (target, key) {
-				return target.get(key.toString());
+				return self.get(key.toString());
 			},
 			set (target, key, val) {
-				return !!target.set(key.toString(), val);
+				return !!self.set(key.toString(), val);
 			},
-		}) as unknown as {
-			[index: string]: string | Uncased;
-		};
+		});
 	}
 	/**
 	 * Get an object-like accessor that only returns strings
@@ -164,9 +199,10 @@ export class Uncased implements Map<string, Uncased | string> {
 	get str (): {
 		[index: string]: string;
 	} {
-		return new Proxy(this, {
+		const self = this;
+		return new Proxy(self.#_strobj, {
 			get (target, key) {
-				const entry = target.get(key.toString())
+				const entry = self.get(key.toString())
 				if (typeof entry === 'string') {
 					return entry;
 				} else if (entry) {
@@ -177,11 +213,9 @@ export class Uncased implements Map<string, Uncased | string> {
 				}
 			},
 			set (target, key, val) {
-				return !!target.set(key.toString(), val);
+				return !!self.set(key.toString(), val);
 			},
-		}) as unknown as {
-			[index: string]: string;
-		};
+		});
 	}
 	get first (): string | undefined {
 		for (const [ key, value ] of this) {
