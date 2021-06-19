@@ -223,6 +223,9 @@ export class Uncased implements Map<string, Uncased | string> {
 			else return value.first;
 		}
 	}
+	toJSON () {
+		return { ...this.obj }
+	}
 }
 
 declare const module: {
