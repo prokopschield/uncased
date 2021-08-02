@@ -1,4 +1,4 @@
-const adder_global_set = new WeakSet;
+const adder_global_set = new WeakSet();
 
 /**
  * Uncased map
@@ -7,48 +7,48 @@ export class Uncased implements Map<string, Uncased | string> {
 	#_values = new Map<string, Uncased | string>();
 	#_valobj: {
 		[index: string]: Uncased | string;
-	} = {}
+	} = {};
 	#_strobj: {
 		[index: string]: string;
-	} = {}
-	private __reflect (key: string) {
+	} = {};
+	private __reflect(key: string) {
 		const self = this;
 		Object.defineProperty(self.#_valobj, key, {
 			enumerable: true,
 			configurable: true,
-			get () {
+			get() {
 				return self.get(key);
 			},
-			set (val) {
+			set(val) {
 				return self.set(key, val);
 			},
 		});
 		Object.defineProperty(self.#_strobj, key, {
 			enumerable: true,
 			configurable: true,
-			get () {
+			get() {
 				const val = self.get(key);
 				if (typeof val === 'string') return val;
 				else return val?.first;
 			},
-			set (val) {
+			set(val) {
 				return self.set(key, val);
 			},
 		});
 	}
-	private __set (key: string, val: string | Uncased) {
+	private __set(key: string, val: string | Uncased) {
 		key = `${key}`.toLocaleLowerCase();
 		this.#_values.set(key, val);
 		this.__reflect(key);
 	}
-	constructor (...initial: any[]) {
+	constructor(...initial: any[]) {
 		this.add(initial);
 	}
 	/**
 	 * Add entires into the map
 	 * @param entries The entries
 	 */
-	add (...entries: any[]) {
+	add(...entries: any[]) {
 		for (const entry of entries) {
 			if (typeof entry !== 'object') {
 				try {
@@ -58,10 +58,13 @@ export class Uncased implements Map<string, Uncased | string> {
 				adder_global_set.add(entry);
 				if (Symbol.iterator in entry) {
 					try {
-						const ar = [ ...(entry as any as Map<string, unknown>) ];
+						const ar = [...(entry as any as Map<string, unknown>)];
 						// If ar is defined, v was iterable.
 						// Otherwise, proceed below.
-						if ((ar.length === 2) && ((typeof ar[0] === 'string') || (typeof ar[0] === 'number'))) {
+						if (
+							ar.length === 2 &&
+							(typeof ar[0] === 'string' || typeof ar[0] === 'number')
+						) {
 							this.add({
 								[ar[0]]: ar[1],
 							});
@@ -75,7 +78,10 @@ export class Uncased implements Map<string, Uncased | string> {
 					const val = entry[key];
 					if (typeof val === 'object') {
 						if (adder_global_set.has(val)) {
-							this.__set(`${key}`.toLocaleLowerCase(), '<<< SELF-REFERENCE >>>');
+							this.__set(
+								`${key}`.toLocaleLowerCase(),
+								'<<< SELF-REFERENCE >>>'
+							);
 						} else {
 							this.__set(`${key}`.toLocaleLowerCase(), new Uncased(val));
 						}
@@ -91,13 +97,13 @@ export class Uncased implements Map<string, Uncased | string> {
 	/**
 	 * Get the number of entries stored
 	 */
-	get size (): number {
+	get size(): number {
 		return this.#_values.size;
 	}
 	/**
 	 * Iterate through map
 	 */
-	*[Symbol.iterator] () {
+	*[Symbol.iterator]() {
 		for (const val of this.#_values) {
 			yield val;
 		}
@@ -105,7 +111,7 @@ export class Uncased implements Map<string, Uncased | string> {
 	/**
 	 * Erase map
 	 */
-	clear () {
+	clear() {
 		return this.#_values.clear();
 	}
 	/**
@@ -113,14 +119,14 @@ export class Uncased implements Map<string, Uncased | string> {
 	 * @param key
 	 * @returns true if entry existed
 	 */
-	delete (key: string | Symbol) {
+	delete(key: string | Symbol) {
 		return this.#_values.delete(`${key}`.toLocaleLowerCase());
 	}
 	/**
 	 * Get iterator of entries
 	 * @returns Iterator
 	 */
-	entries () {
+	entries() {
 		return this.#_values.entries();
 	}
 	/**
@@ -128,8 +134,15 @@ export class Uncased implements Map<string, Uncased | string> {
 	 * @param cb Your callback function
 	 * @param thisArg What should be used as `this`
 	 */
-	forEach (cb: (item: Uncased | string, key: string, map: Map<string, Uncased | string>) => void, thisArg: any) {
-		for (const [ key, item ] of (this.entries())) {
+	forEach(
+		cb: (
+			item: Uncased | string,
+			key: string,
+			map: Map<string, Uncased | string>
+		) => void,
+		thisArg: any
+	) {
+		for (const [key, item] of this.entries()) {
 			try {
 				cb.call(thisArg || this, item, key, this.#_values);
 			} catch (error) {
@@ -142,14 +155,14 @@ export class Uncased implements Map<string, Uncased | string> {
 	 * Get a value
 	 * @param key
 	 */
-	get (key: string) {
+	get(key: string) {
 		return this.#_values.get(`${key}`.toLocaleLowerCase());
 	}
 	/**
 	 * Check if a value exists
 	 * @param key
 	 */
-	has (key: string) {
+	has(key: string) {
 		return this.#_values.has(`${key}`.toLocaleLowerCase());
 	}
 	/**
@@ -157,7 +170,10 @@ export class Uncased implements Map<string, Uncased | string> {
 	 * @param key
 	 * @param val
 	 */
-	set (key: string, val: string | object | IterableIterator<string | [string, string]>) {
+	set(
+		key: string,
+		val: string | object | IterableIterator<string | [string, string]>
+	) {
 		return this.add({
 			[key]: val,
 		});
@@ -166,29 +182,29 @@ export class Uncased implements Map<string, Uncased | string> {
 	 * Get all keys in the map
 	 * @returns Iterator of keys
 	 */
-	keys () {
+	keys() {
 		return this.#_values.keys();
 	}
 	/**
 	 * Get all values of the map
 	 * @returns Iterator of values
 	 */
-	values () {
+	values() {
 		return this.#_values.values();
 	}
 	[Symbol.toStringTag] = 'Uncased Map';
 	/**
 	 * Get an object-like accessor
 	 */
-	get obj (): {
+	get obj(): {
 		[index: string]: string | Uncased;
 	} {
 		const self = this;
 		return new Proxy(self.#_valobj, {
-			get (target, key) {
+			get(target, key) {
 				return self.get(key.toString());
 			},
-			set (target, key, val) {
+			set(target, key, val) {
 				return !!self.set(key.toString(), val);
 			},
 		});
@@ -196,41 +212,41 @@ export class Uncased implements Map<string, Uncased | string> {
 	/**
 	 * Get an object-like accessor that only returns strings
 	 */
-	get str (): {
+	get str(): {
 		[index: string]: string;
 	} {
 		const self = this;
 		return new Proxy(self.#_strobj, {
-			get (target, key) {
-				const entry = self.get(key.toString())
+			get(target, key) {
+				const entry = self.get(key.toString());
 				if (typeof entry === 'string') {
 					return entry;
 				} else if (entry) {
-					for (let [ key, val ] of entry) {
+					for (let [key, val] of entry) {
 						if (typeof val === 'string') val;
 						else return val.first;
 					}
 				}
 			},
-			set (target, key, val) {
+			set(target, key, val) {
 				return !!self.set(key.toString(), val);
 			},
 		});
 	}
-	get first (): string | undefined {
-		for (const [ key, value ] of this) {
+	get first(): string | undefined {
+		for (const [key, value] of this) {
 			if (typeof value === 'string') return value;
 			else return value.first;
 		}
 	}
-	toJSON () {
-		return { ...this.obj }
+	toJSON() {
+		return { ...this.obj };
 	}
 }
 
 declare const module: {
 	exports?: typeof Uncased;
-}
+};
 
 export default Uncased;
 module.exports = Uncased;

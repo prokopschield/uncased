@@ -21,16 +21,17 @@ const uMap = require('uncased');
 const map = new uMap();
 map.set('FOO', 'bar');
 const obj = map.obj;
-obj.foo // bar
-obj.Foo // bar
-obj.FiZz = 'buzz' // buzz
-obj.fizz // buzz
-map.get('fiZZ') // buzz
-map.add({ a: { b: { c: { d: 'e' } } } })
-map.obj.a.obj.b.obj.c.obj.d // e
+obj.foo; // bar
+obj.Foo; // bar
+obj.FiZz = 'buzz'; // buzz
+obj.fizz; // buzz
+map.get('fiZZ'); // buzz
+map.add({ a: { b: { c: { d: 'e' } } } });
+map.obj.a.obj.b.obj.c.obj.d; // e
 ```
 
 #### map.obj returns a Proxy object, which you can use instead of the map!
+
 #### map.str returns a Proxy object, which only gives you strings.
 
-Free to use, under GNU GPL. See [License](<https://gnu.org/licenses/gpl>).
+Free to use, under GNU GPL. See [License](https://gnu.org/licenses/gpl).
